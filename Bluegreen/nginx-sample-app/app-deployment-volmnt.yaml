@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-deployment
+  namespace: test-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          volumeMounts:
+            - name: app1-html-volume
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: app1-html-volume
+          configMap:
+            name: app1-html
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2-deployment
+  namespace: test-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          volumeMounts:
+            - name: app2-html-volume
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: app2-html-volume
+          configMap:
+            name: app2-html
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1-service
+  namespace: test-infra
+spec:
+  selector:
+    app: app1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2-service
+  namespace: test-infra
+spec:
+  selector:
+    app: app2
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+

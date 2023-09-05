@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: gateway-01
+  namespace: test-infra
+  annotations:
+    alb.networking.azure.io/alb-id: /subscriptions/965e72d1-5ff0-4b7b-805c-c8a586b79913/resourceGroups/oned-ne-qa-gr-rg/providers/Microsoft.ServiceNetworking/trafficControllers/alb-test
+spec:
+  gatewayClassName: azure-alb-external
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+  addresses:
+  - type: alb.networking.azure.io/alb-frontend
+    value: test-frontend
